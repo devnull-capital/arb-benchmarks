@@ -319,65 +319,6 @@ func TestIsDupe(t *testing.T) {
 	}
 }
 
-func BenchmarkArbFromRates(b *testing.B) {
-	rates := []*rate{
-		&rate{
-			from: "a",
-			to:   "b",
-			rate: 2.0,
-		},
-		&rate{
-			from: "b",
-			to:   "c",
-			rate: 2.0,
-		},
-		&rate{
-			from: "c",
-			to:   "d",
-			rate: 2.0,
-		},
-		&rate{
-			from: "d",
-			to:   "e",
-			rate: 2.0,
-		},
-		&rate{
-			from: "b",
-			to:   "a",
-			rate: 2.0,
-		},
-		&rate{
-			from: "c",
-			to:   "a",
-			rate: 2.0,
-		},
-		&rate{
-			from: "d",
-			to:   "a",
-			rate: 2.0,
-		},
-		&rate{
-			from: "c",
-			to:   "b",
-			rate: 2.0,
-		},
-		&rate{
-			from: "d",
-			to:   "b",
-			rate: 2.0,
-		},
-		&rate{
-			from: "d",
-			to:   "c",
-			rate: 2.0,
-		},
-	}
-
-	for i := 0; i < b.N; i++ {
-		_ = arbFromRates(rates, 10)
-	}
-}
-
 func TestIsListClosing(t *testing.T) {
 	for i, tt := range []struct {
 		list     []*rate
@@ -421,4 +362,83 @@ func TestIsListClosing(t *testing.T) {
 		})
 	}
 
+}
+
+func BenchmarkArbFromRates(b *testing.B) {
+	rates := []*rate{
+		&rate{
+			from: "a",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "d",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "d",
+			rate: 2.0,
+		},
+	}
+
+	for i := 0; i < b.N; i++ {
+		_ = arbFromRates(rates, 10)
+	}
 }

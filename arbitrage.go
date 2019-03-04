@@ -13,6 +13,8 @@ func arbFromCombos(combos [][][]*rate) [][][]*rate {
 	ret := make([][][]*rate, len(combos))
 	for i := range combos {
 		for j := range combos[i] {
+			// TODO: get rid of internal arb (i.e. where there's already an a>b>a pattern, internally
+
 			if isArb(combos[i][j]) && !isDupe(ret[i], combos[i][j]) {
 				ret[i] = append(ret[i], combos[i][j])
 			}
