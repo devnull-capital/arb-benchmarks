@@ -372,17 +372,17 @@ func BenchmarkArbFromRates(b *testing.B) {
 			rate: 2.0,
 		},
 		&rate{
-			from: "b",
+			from: "a",
 			to:   "c",
 			rate: 2.0,
 		},
 		&rate{
-			from: "c",
+			from: "a",
 			to:   "d",
 			rate: 2.0,
 		},
 		&rate{
-			from: "d",
+			from: "a",
 			to:   "e",
 			rate: 2.0,
 		},
@@ -392,17 +392,22 @@ func BenchmarkArbFromRates(b *testing.B) {
 			rate: 2.0,
 		},
 		&rate{
+			from: "b",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "d",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
 			from: "c",
-			to:   "a",
-			rate: 2.0,
-		},
-		&rate{
-			from: "d",
-			to:   "a",
-			rate: 2.0,
-		},
-		&rate{
-			from: "e",
 			to:   "a",
 			rate: 2.0,
 		},
@@ -412,18 +417,43 @@ func BenchmarkArbFromRates(b *testing.B) {
 			rate: 2.0,
 		},
 		&rate{
-			from: "d",
-			to:   "b",
+			from: "c",
+			to:   "d",
 			rate: 2.0,
 		},
 		&rate{
-			from: "e",
+			from: "c",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
 			to:   "b",
 			rate: 2.0,
 		},
 		&rate{
 			from: "d",
 			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "b",
 			rate: 2.0,
 		},
 		&rate{
@@ -439,6 +469,6 @@ func BenchmarkArbFromRates(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		_ = arbFromRates(rates, 10)
+		_ = arbFromRates(rates, 5)
 	}
 }

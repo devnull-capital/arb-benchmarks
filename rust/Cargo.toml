@@ -1,0 +1,7 @@
+[package]
+name = "arb"
+version = "0.1.0"
+authors = ["adam <ahanna@alumni.mines.edu>"]
+edition = "2018"
+
+[dependencies]
