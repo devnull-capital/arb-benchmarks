@@ -21,11 +21,11 @@ pub fn arb_from_rates<'a>(rates: Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a R
 fn arb_from_combos<'a>(combos: Vec<Vec<Vec<&'a Rate>>>) -> Vec<Vec<Vec<&'a Rate>>> {
     let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::new();
 
-    for i in 0..combos.len() {
+    for i in combos {
         let mut tmp: Vec<Vec<&Rate>> = Vec::new();
-        for j in 0..combos[i].len() {
-            if is_arb(&combos[i][j]) && !is_dupe(&tmp, &combos[i][j]) {
-                tmp.push(combos[i][j]);
+        for j in i {
+            if is_arb(&j) && !is_dupe(&tmp, &j) {
+                tmp.push(j);
             }
         }
 
@@ -106,7 +106,10 @@ fn combos_from_rates<'a>(rates: Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Ra
         for j in 0..ret[(i-1) as usize].len() {
             for k in 0..rates.len() {
                 if ret[(i-1) as usize][j as usize][(ret[(i-1) as usize][j as usize].len()-1) as usize].to == rates[k as usize].from && !is_rate_in_list(&ret[(i-1) as usize][j as usize], rates[k as usize]) && !is_list_closing(&ret[(i-1) as usize][j as usize]) {
-                    let mut tmp1 = ret[(i-1) as usize][j as usize];
+                    let mut tmp1: Vec<&Rate> = Vec::new();
+                    for z in 0..ret[(i-1) as usize][j as usize].len() {
+                        tmp1.push(ret[(i-1) as usize][j as usize][z]); 
+                    }
                     tmp1.push(rates[k as usize]);
                     tmp.push(tmp1);
                 }
