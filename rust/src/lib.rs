@@ -14,18 +14,18 @@ pub struct Rate {
     vol: f64,
 }
 
-pub fn arb_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
-    return arb_from_combos(&combos_from_rates(rates, depth))
+pub fn arb_from_rates<'a>(rates: Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
+    return arb_from_combos(combos_from_rates(rates, depth))
 }
 
-fn arb_from_combos<'a, 'b>(combos: &'b Vec<Vec<Vec<&'a Rate>>>) -> Vec<Vec<Vec<&'a Rate>>> {
+fn arb_from_combos<'a>(combos: Vec<Vec<Vec<&'a Rate>>>) -> Vec<Vec<Vec<&'a Rate>>> {
     let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::new();
 
     for i in 0..combos.len() {
         let mut tmp: Vec<Vec<&Rate>> = Vec::new();
         for j in 0..combos[i].len() {
             if is_arb(&combos[i][j]) && !is_dupe(&tmp, &combos[i][j]) {
-                tmp.push(combos[i][j].to_vec());
+                tmp.push(combos[i][j]);
             }
         }
 
@@ -86,16 +86,27 @@ fn is_arb<'a>(list: &'a Vec<&'a Rate>) -> bool {
     return prod > 1.0
 }
 
-fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
+fn combos_from_rates<'a>(rates: Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
     let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::new();
-    ret.push(build_base(rates));
+    //ret.push(build_base(&rates));
+    // build base
+    let mut base: Vec<Vec<&Rate>> = Vec::new();
+
+    for i in 0..rates.len() {
+        for j in (i+1)..rates.len() {
+            if rates[i].to == rates[j].from {
+                base.push(vec![rates[i], rates[j]]);
+            }
+        }
+    }
+    ret.push(base);
 
     for i in 1..depth {
         let mut tmp: Vec<Vec<&Rate>> = Vec::new();
         for j in 0..ret[(i-1) as usize].len() {
             for k in 0..rates.len() {
                 if ret[(i-1) as usize][j as usize][(ret[(i-1) as usize][j as usize].len()-1) as usize].to == rates[k as usize].from && !is_rate_in_list(&ret[(i-1) as usize][j as usize], rates[k as usize]) && !is_list_closing(&ret[(i-1) as usize][j as usize]) {
-                    let mut tmp1 = ret[(i-1) as usize][j as usize].to_vec();
+                    let mut tmp1 = ret[(i-1) as usize][j as usize];
                     tmp1.push(rates[k as usize]);
                     tmp.push(tmp1);
                 }
@@ -104,7 +115,7 @@ fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'
         ret.push(tmp);
     }
 
-    return ret.to_vec()
+    return ret
 }
 
 fn is_list_closing<'a>(list: &'a Vec<&'a Rate>) -> bool {
@@ -117,7 +128,7 @@ fn build_base<'a>(rates: &'a Vec<&'a Rate>) -> Vec<Vec<&'a Rate>> {
     for i in 0..rates.len() {
         for j in (i+1)..rates.len() {
             if rates[i].to == rates[j].from {
-                ret.push(vec![rates[i], rates[j]])
+                ret.push(vec![rates[i], rates[j]]);
             }
         }
     }
@@ -262,7 +273,7 @@ fn test_combos_from_rates() {
     };
 
     let l1 = vec![&r1, &r2, &r3, &r4];
-    let c1 = combos_from_rates(&l1, 4);
+    let c1 = combos_from_rates(l1, 4);
 
     assert_eq!(c1.len(), 4);
     assert_eq!(c1[0].len(), 2);
@@ -453,8 +464,7 @@ fn test_arb_from_combos() {
     };
     
     let l1 = vec![&r1, &r2, &r3, &r4];
-    let arb = arb_from_rates(&l1, 4);
-    println!("{:?}", arb);
+    let arb = arb_from_rates(l1, 4);
     assert_eq!(arb.len(), 4);
     assert_eq!(arb[0].len(), 0);
     assert_eq!(arb[1].len(), 1);
@@ -466,7 +476,7 @@ fn test_arb_from_combos() {
 #[bench]
 fn bench_arb(b: &mut Bencher) {
     b.iter(|| {
-        arb_from_rates(&vec![&Rate{
+        arb_from_rates(vec![&Rate{
             id: 0,
             from: String::from("a"),
             to: String::from("b"),
