@@ -14,7 +14,7 @@ pub struct Rate {
     vol: f64,
 }
 
-pub fn arb_from_rates<'a>(rates: Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
+pub fn arb_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
     return arb_from_combos(combos_from_rates(rates, depth))
 }
 
@@ -86,20 +86,9 @@ fn is_arb<'a>(list: &'a Vec<&'a Rate>) -> bool {
     return prod > 1.0
 }
 
-fn combos_from_rates<'a>(rates: Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
+fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
     let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::new();
-    //ret.push(build_base(&rates));
-    // build base
-    let mut base: Vec<Vec<&Rate>> = Vec::new();
-
-    for i in 0..rates.len() {
-        for j in (i+1)..rates.len() {
-            if rates[i].to == rates[j].from {
-                base.push(vec![rates[i], rates[j]]);
-            }
-        }
-    }
-    ret.push(base);
+    ret.push(build_base(rates));
 
     for i in 1..depth {
         let mut tmp: Vec<Vec<&Rate>> = Vec::new();
@@ -276,7 +265,7 @@ fn test_combos_from_rates() {
     };
 
     let l1 = vec![&r1, &r2, &r3, &r4];
-    let c1 = combos_from_rates(l1, 4);
+    let c1 = combos_from_rates(&l1, 4);
 
     assert_eq!(c1.len(), 4);
     assert_eq!(c1[0].len(), 2);
@@ -432,7 +421,7 @@ fn test_is_dupe() {
 }
 
 #[test]
-fn test_arb_from_combos() {
+fn test_arb_from_rates() {
     let r1 = Rate{
         id: 0,
         from: String::from("a"),
@@ -467,7 +456,7 @@ fn test_arb_from_combos() {
     };
     
     let l1 = vec![&r1, &r2, &r3, &r4];
-    let arb = arb_from_rates(l1, 4);
+    let arb = arb_from_rates(&l1, 4);
     assert_eq!(arb.len(), 4);
     assert_eq!(arb[0].len(), 0);
     assert_eq!(arb[1].len(), 1);
@@ -478,147 +467,169 @@ fn test_arb_from_combos() {
 
 #[bench]
 fn bench_arb(b: &mut Bencher) {
+    let r1 = &Rate{
+        id: 0,
+        from: String::from("a"),
+        to: String::from("b"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r2 = &Rate{
+        id: 2,
+        from: String::from("a"),
+        to: String::from("c"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r3 = &Rate{
+        id: 3,
+        from: String::from("a"),
+        to: String::from("d"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r4 = &Rate{
+        id: 4,
+        from: String::from("a"),
+        to: String::from("e"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r5 = &Rate{
+        id: 5,
+        from: String::from("b"),
+        to: String::from("a"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r6 = &Rate{
+        id: 6,
+        from: String::from("b"),
+        to: String::from("c"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r7 = &Rate{
+        id: 7,
+        from: String::from("b"),
+        to: String::from("d"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r8 = &Rate{
+        id: 8,
+        from: String::from("b"),
+        to: String::from("e"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r9 = &Rate{
+        id: 9,
+        from: String::from("c"),
+        to: String::from("a"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r10 = &Rate{
+        id: 10,
+        from: String::from("c"),
+        to: String::from("b"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r11 = &Rate{
+        id: 11,
+        from: String::from("c"),
+        to: String::from("d"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r12 = &Rate{
+        id: 12,
+        from: String::from("c"),
+        to: String::from("e"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r13 = &Rate{
+        id: 13,
+        from: String::from("d"),
+        to: String::from("a"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r14 = &Rate{
+        id: 14,
+        from: String::from("d"),
+        to: String::from("b"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r15 = &Rate{
+        id: 15,
+        from: String::from("d"),
+        to: String::from("c"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r16 = &Rate{
+        id: 16,
+        from: String::from("d"),
+        to: String::from("e"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r17 = &Rate{
+        id: 17,
+        from: String::from("e"),
+        to: String::from("a"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r18 = &Rate{
+        id: 18,
+        from: String::from("e"),
+        to: String::from("b"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r19 = &Rate{
+        id: 19,
+        from: String::from("e"),
+        to: String::from("c"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let r20 = &Rate{
+        id: 20,
+        from: String::from("e"),
+        to: String::from("d"),
+        exchange: String::from("j"),
+        rate: 2.0,
+        vol: 1.0,
+    };
+    let l = vec![r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20];
+
     b.iter(|| {
-        arb_from_rates(vec![&Rate{
-            id: 0,
-            from: String::from("a"),
-            to: String::from("b"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 2,
-            from: String::from("a"),
-            to: String::from("c"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 3,
-            from: String::from("a"),
-            to: String::from("d"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 4,
-            from: String::from("a"),
-            to: String::from("e"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 5,
-            from: String::from("b"),
-            to: String::from("a"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 6,
-            from: String::from("b"),
-            to: String::from("c"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 7,
-            from: String::from("b"),
-            to: String::from("d"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 8,
-            from: String::from("b"),
-            to: String::from("e"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 9,
-            from: String::from("c"),
-            to: String::from("a"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 10,
-            from: String::from("c"),
-            to: String::from("b"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 11,
-            from: String::from("c"),
-            to: String::from("d"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 12,
-            from: String::from("c"),
-            to: String::from("e"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 13,
-            from: String::from("d"),
-            to: String::from("a"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 14,
-            from: String::from("d"),
-            to: String::from("b"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 15,
-            from: String::from("d"),
-            to: String::from("c"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 16,
-            from: String::from("d"),
-            to: String::from("e"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 17,
-            from: String::from("e"),
-            to: String::from("a"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 18,
-            from: String::from("e"),
-            to: String::from("b"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 19,
-            from: String::from("e"),
-            to: String::from("c"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }, &Rate{
-            id: 20,
-            from: String::from("e"),
-            to: String::from("d"),
-            exchange: String::from("j"),
-            rate: 2.0,
-            vol: 1.0,
-        }], 5);
+        arb_from_rates(&l, 5);
     });
 }

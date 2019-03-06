@@ -28,7 +28,7 @@ test test_is_arb ... ignored
 test test_is_dupe ... ignored
 test test_is_list_closing ... ignored
 test test_is_rate_in_list ... ignored
-test bench_arb ... bench:  18,828,400 ns/iter (+/- 1,704,960)
+test bench_arb ... bench:  10,506,900 ns/iter (+/- 1,722,940)
 
 test result: ok. 0 passed; 0 failed; 7 ignored; 1 measured; 0 filtered out
 ```
