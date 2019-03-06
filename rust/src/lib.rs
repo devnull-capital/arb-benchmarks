@@ -49,8 +49,8 @@ fn is_dupe<'a>(list: &'a Vec<Vec<&'a Rate>>, arb: &'a Vec<&'a Rate>) -> bool {
         );
     }
 
-    let mut count = 0;
     for i in 0..list.len() {
+        let mut count = 0;
         for j in 0..list[i].len() {
             if m.contains_key(&list[i][j].id) {
                 count = count + 1;
@@ -117,7 +117,7 @@ fn build_base<'a>(rates: &'a Vec<&'a Rate>) -> Vec<Vec<&'a Rate>> {
     for i in 0..rates.len() {
         for j in (i+1)..rates.len() {
             if rates[i].to == rates[j].from {
-                ret.push(vec![rates[i], rates[j]])
+                ret.push(vec![rates[i], rates[j]]);
             }
         }
     }
