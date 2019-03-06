@@ -6,3 +6,7 @@
 
 # Session
 Session.vim
+
+# rust
+rust/target/
+**/*.rs.bk
