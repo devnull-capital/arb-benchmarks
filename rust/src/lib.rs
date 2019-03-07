@@ -6,12 +6,12 @@ use test::Bencher;
 
 #[derive(Debug)]
 pub struct Rate {
-    id: u8,
-    from: String,
-    to: String,
-    exchange: String,
-    rate: f64,
-    vol: f64,
+    pub id: u8,
+    pub from: String,
+    pub to: String,
+    pub exchange: String,
+    pub rate: f64,
+    pub vol: f64,
 }
 
 pub fn arb_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
@@ -94,7 +94,7 @@ fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'
         let mut tmp: Vec<Vec<&Rate>> = Vec::new();
         for j in 0..ret[(i-1) as usize].len() {
             for k in 0..rates.len() {
-                if ret[(i-1) as usize][j as usize][(ret[(i-1) as usize][j as usize].len()-1) as usize].to == rates[k as usize].from && !is_rate_in_list(&ret[(i-1) as usize][j as usize], rates[k as usize]) && !is_list_closing(&ret[(i-1) as usize][j as usize]) {
+                if ret[(i-1) as usize][j as usize].last().unwrap().to == rates[k as usize].from && !is_rate_in_list(&ret[(i-1) as usize][j as usize], rates[k as usize]) && !is_list_closing(&ret[(i-1) as usize][j as usize]) {
                     let mut tmp1: Vec<&Rate> = Vec::new();
                     for z in 0..ret[(i-1) as usize][j as usize].len() {
                         tmp1.push(ret[(i-1) as usize][j as usize][z]); 
