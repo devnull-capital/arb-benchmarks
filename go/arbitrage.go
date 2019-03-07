@@ -1,4 +1,111 @@
-package arbitrage
+package main
+
+func main() {
+	rates := []*rate{
+		&rate{
+			from: "a",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "a",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "a",
+			to:   "d",
+			rate: 2.0,
+		},
+		&rate{
+			from: "a",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "d",
+			rate: 2.0,
+		},
+		&rate{
+			from: "b",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "d",
+			rate: 2.0,
+		},
+		&rate{
+			from: "c",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "d",
+			to:   "e",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "a",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "b",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "c",
+			rate: 2.0,
+		},
+		&rate{
+			from: "e",
+			to:   "d",
+			rate: 2.0,
+		},
+	}
+
+	_ = arbFromRates(rates, 5)
+}
 
 type rate struct {
 	from, to, exchange string
@@ -89,7 +196,12 @@ func combosFromRates(rates []*rate, depth uint) [][][]*rate {
 		for j := range ret[i-1] {
 			for k := range rates {
 				if ret[i-1][j][len(ret[i-1][j])-1].to == rates[k].from && !isRateInList(ret[i-1][j], rates[k]) && !isListClosing(ret[i-1][j]) {
-					ret[i] = append(ret[i], append(ret[i-1][j], rates[k]))
+					var tmp []*rate
+					for z := range ret[i-1][j] {
+						tmp = append(tmp, ret[i-1][j][z])
+					}
+					tmp = append(tmp, rates[k])
+					ret[i] = append(ret[i], tmp)
 				}
 			}
 		}
