@@ -8,7 +8,7 @@ benchmarking go
 goos: linux
 goarch: amd64
 pkg: github.com/adam-hanna/arb-test/go
-BenchmarkArbFromRates-8              500           3856434 ns/op
+BenchmarkArbFromRates-8               50          20514340 ns/op
 PASS
 ok      github.com/adam-hanna/arb-test/go       2.253s
 
@@ -28,7 +28,6 @@ test test_is_arb ... ignored
 test test_is_dupe ... ignored
 test test_is_list_closing ... ignored
 test test_is_rate_in_list ... ignored
-test bench_arb ... bench:  10,506,900 ns/iter (+/- 1,722,940)
-
+test bench_arb ... bench:  29,285,900 ns/iter (+/- 11,229,410)
 test result: ok. 0 passed; 0 failed; 7 ignored; 1 measured; 0 filtered out
 ```
