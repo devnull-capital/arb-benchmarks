@@ -80,11 +80,11 @@ void arbFromRates(const vector<rate*> &rates, const unsigned int depth, vector< 
 
 void combosFromRates(const vector<rate*> &rates, const unsigned int depth, vector< vector< vector<rate*>* >* > &combos)
 {
-  buildBase(rates, combos[0]);
+  buildBase(rates, *combos.at(0));
 
   int i, j, k;
   for (i = 1; i < depth; ++i) {
-    for (j = 0; j < combos[i-1]->size(); ++j) {
+    for (j = 0; j < combos.at(i-1)->size(); ++j) {
       for (k = 0; k < rates.size(); ++k) {
         cout << "in da loop\n";
       }
