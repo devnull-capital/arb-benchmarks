@@ -1,0 +1,4 @@
+/home/adam/go/src/github.com/devnull-capital/arb-go-vs-rust/cpp/gtest/CMakeFiles/rebuild_cache.dir
+/home/adam/go/src/github.com/devnull-capital/arb-go-vs-rust/cpp/gtest/CMakeFiles/gtest.dir
+/home/adam/go/src/github.com/devnull-capital/arb-go-vs-rust/cpp/gtest/CMakeFiles/edit_cache.dir
+/home/adam/go/src/github.com/devnull-capital/arb-go-vs-rust/cpp/gtest/CMakeFiles/gtest_main.dir
