@@ -23,3 +23,7 @@ test/go:
 .PHONY: test/rust
 test/rust:
 	@echo "testing rust\n" && (cd ./rust/src/ && cargo test)
+
+.PHONY: build/cpp
+build/cpp:
+	@g++ ./cpp/main.cpp -o ./cpp/main -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops
