@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 struct rate {
@@ -15,7 +16,6 @@ bool isArb(const vector<rate*> &list);
 void combosFromRates(const vector<rate*> &rates, const unsigned int depth, vector< vector< vector<rate*>* >* > &combos);
 bool isListClosing(const vector<rate*> &list);
 void buildBase(const vector<rate*> &rates, vector< vector<rate*>* > &ret);
-bool isRateInList(const vector<rate*> &list, rate &r);
 
 int main ()
 {
@@ -60,12 +60,48 @@ int main ()
     r17,
     r18,
     r19,
-    r20
+    r20,
   };
   
+  //vector<rate*> rv = {};
+  //vector< vector<rate*>* > rvv = {&rv};
+
+  int i;
   vector< vector< vector<rate*>* > *> ret(5);
+  for (i = 0; i < ret.size(); ++i) {
+    vector<rate*> rv = {};
+    vector< vector<rate*>* > rvv = {&rv};
+    ret.at(i) = {&rvv};
+  }
+
   vector< vector< vector<rate*>* > *> combos(5);
+  for (i = 0; i < combos.size(); ++i) {
+    vector<rate*> rv = {};
+    vector< vector<rate*>* > rvv = {&rv};
+    ret.at(i) = {&rvv};
+  }
   arbFromRates(rates, 5, combos, ret);
+
+  delete r1;
+  delete r2;
+  delete r3;
+  delete r4;
+  delete r5;
+  delete r6;
+  delete r7;
+  delete r8;
+  delete r9;
+  delete r10;
+  delete r11;
+  delete r12;
+  delete r13;
+  delete r14;
+  delete r15;
+  delete r16;
+  delete r17;
+  delete r18;
+  delete r19;
+  delete r20;
 
   cout << "done!\n";
   return 0;
@@ -84,9 +120,18 @@ void combosFromRates(const vector<rate*> &rates, const unsigned int depth, vecto
 
   int i, j, k;
   for (i = 1; i < depth; ++i) {
+    cout << "i: " << i << "\n";
     for (j = 0; j < combos.at(i-1)->size(); ++j) {
+      cout << "j: " << j << "\n";
       for (k = 0; k < rates.size(); ++k) {
-        cout << "in da loop\n";
+        cout << "k: " << k << "\n";
+        if (combos.at(i-1)->at(j)->back()->to == rates.at(k)->from &&
+        !(find(combos.at(i-j)->at(j)->begin(), combos.at(i-j)->at(j)->end(), rates.at(k)) != combos.at(i-j)->at(j)->end()) &&
+        !isListClosing(*combos.at(i-1)->at(j))) {
+          vector<rate*> *newV(combos.at(i-1)->at(j));
+          newV->push_back(rates.at(k));
+          combos.at(i)->push_back(newV);
+        }
       }
     }
   }
@@ -99,5 +144,31 @@ void arbFromCombos(const vector< vector< vector<rate*>* >* > &combos, vector< ve
 
 void buildBase(const vector<rate*> &rates, vector< vector<rate*>* > &ret)
 {
-  cout << "in buildBase\n";
+  cout << "creating ret\n";
+  ret = {};
+  cout << "done creating ret\n";
+
+  int i, j;
+  for (i = 0; i < rates.size(); ++i) {
+    cout << "build base i: " << i << "\n";
+    for (j = i + 1; j < rates.size(); ++j) {
+      cout << "build base j: " << j << "\n";
+      if (rates.at(i)->to == rates.at(j)->from) {
+        for (auto i: ret)
+            std::cout << i << ' ';
+        vector<rate*> v = {
+          rates.at(i),
+          rates.at(j),
+        };
+        cout << "adding rates\n";
+
+        ret.push_back(&v);
+      }
+    }
+  }
+}
+
+bool isListClosing(const vector<rate*> &list)
+{
+  return list.front()->from == list.back()->to;
 }
