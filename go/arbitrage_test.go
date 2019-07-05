@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"runtime"
 	"testing"
 )
 
@@ -468,7 +470,11 @@ func BenchmarkArbFromRates(b *testing.B) {
 		},
 	}
 
+	// note: don't want go to optimize by ignoring the output
+	_ = runtime.GOMAXPROCS(1)
+	var tmp [][][]*rate
 	for i := 0; i < b.N; i++ {
-		_ = arbFromRates(rates, 5)
+		tmp = arbFromRates(rates, 5)
 	}
+	log.Printf("tmp len: %d", len(tmp))
 }

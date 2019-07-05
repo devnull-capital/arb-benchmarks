@@ -51,10 +51,13 @@ vector<rate> rates = {
 int main ()
 {
   int i;
+
+  // note: we don't want the compiler to optimize by removing the output
+  vector< vector< vector<rate> > > arb(depth);
   for (i = 0; i < 100; ++i) {
-    auto arb = arbFromRates(rates, depth);
+    arb = arbFromRates(rates, depth);
   }
 
-  cout << "done!\n";
+  cout << "tmp len: " << arb.size() << "\n";
   return 0;
 }

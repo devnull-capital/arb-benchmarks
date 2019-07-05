@@ -49,10 +49,12 @@ static void BM_ArbFromRates(benchmark::State& state) {
     r20,
   };
 
+  vector< vector< vector<rate> > > arb(depth);
   for (auto _ : state) {
     // This code gets timed
-    auto arb = arbFromRates(rates, depth);
+    arb = arbFromRates(rates, depth);
   }
+  cout << "tmp len: " << arb.size() << "\n";
 }
 
 // Register the function as a benchmark

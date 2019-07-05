@@ -7,7 +7,11 @@
 # Session
 Session.vim
 
+# go
+go/main
+
 # rust
+rust/main
 rust/target/
 **/*.rs.bk
 
@@ -20,3 +24,5 @@ valgring-out.txt
 cpp/gtest/lib/*
 cpp/gtest/bin/*
 cpp/build/*
+
+*/main

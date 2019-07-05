@@ -1,5 +1,9 @@
 all: bench
 
+.PHONY: time
+time: time/go time/rust time/cpp
+	@echo "\n\ndone!"
+
 .PHONY: bench
 bench: bench/go bench/rust bench/cpp
 	@echo "\n\ndone!"
@@ -20,13 +24,33 @@ test: test/go test/rust
 test/go:
 	@echo "testing go\n" && (cd ./go && go test .)
 
+.PHONY: build/go
+build/go:
+	@(cd go && go build -o main)
+
+.PHONY: time/go
+time/go: build/go
+	@echo "\n\n timing go" && time ./go/main && echo "\n\n"
+
 .PHONY: test/rust
 test/rust:
 	@echo "testing rust\n" && (cd ./rust/src/ && cargo test)
 
+.PHONY: build/rust
+build/rust:
+	@rustc ./rust/src/lib.rs -o ./rust/main
+
+.PHONY: time/rust
+time/rust: build/rust
+	@echo "\n\n timing rust" && time ./rust/main && echo "\n\n"
+
 .PHONY: build/cpp
 build/cpp:
 	@g++ -o ./cpp/main ./cpp/main.cpp ./cpp/arb.cpp -std=c++11 -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops
+
+.PHONY: time/cpp
+time/cpp: build/cpp
+	@echo "\n\n timing C++" && time ./cpp/main && echo "\n\n"
 
 .PHONY: valgrind/cpp
 valgrind/cpp:
@@ -56,5 +80,5 @@ gbench:
 .PHONY: bench/cpp
 bench/cpp: clean/cpp/bench
 	@echo "\n\nbenchmarking C++\n"
-	@g++ -o ./cpp/arb_benchmark ./cpp/arb_benchmark.cpp ./cpp/arb.cpp -std=c++11 -lbenchmark -lpthread -isystem -I./cpp/benchmark/include -L./cpp/build/src
+	@g++ -o ./cpp/arb_benchmark ./cpp/arb_benchmark.cpp ./cpp/arb.cpp -std=c++17 -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops -lbenchmark -lpthread -isystem -I./cpp/benchmark/include -L./cpp/build/src
 	@./cpp/arb_benchmark
