@@ -70,8 +70,8 @@ bool isListClosing(const vector<rate*> &list)
 bool isRateInList(const vector<rate*> &list, const rate *r)
 {
   int i;
-  for (i = 0; i < list.size(); ++i) {
-    if (list[i] == r)
+  for (auto &l: list) {
+    if (l == r)
       return true;
   }
 
@@ -104,11 +104,11 @@ bool isDupe(const vector<vector<rate*> > &list, const vector<rate*> &arb)
     return false;
 
   unordered_map<rate*, bool> u = {};
-  for (auto r : arb)
+  for (auto &r : arb)
     u[r] = true;
 
-  for (auto v : list) {
-    for (auto r : v) {
+  for (auto &v : list) {
+    for (auto &r : v) {
       if (!u[r])
         goto cnt;
     }
