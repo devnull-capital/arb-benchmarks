@@ -1,5 +1,10 @@
 package main
 
+import (
+	"log"
+	"runtime"
+)
+
 func main() {
 	rates := []*rate{
 		&rate{
@@ -104,7 +109,12 @@ func main() {
 		},
 	}
 
-	_ = arbFromRates(rates, 5)
+	_ = runtime.GOMAXPROCS(1)
+	var tmp [][][]*rate
+	for i := 0; i < 100; i++ {
+		tmp = arbFromRates(rates, 5)
+	}
+	log.Printf("tmp len: %d", len(tmp))
 }
 
 type rate struct {

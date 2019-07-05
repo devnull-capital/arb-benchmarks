@@ -7,6 +7,22 @@
 # Session
 Session.vim
 
+# go
+go/main
+
 # rust
+rust/main
 rust/target/
 **/*.rs.bk
+
+# cpp
+cpp/main
+cpp/arb_unit_test
+cpp/arb_benchmark
+valgring-out.txt
+
+cpp/gtest/lib/*
+cpp/gtest/bin/*
+cpp/build/*
+
+*/main
