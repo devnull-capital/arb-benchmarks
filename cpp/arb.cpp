@@ -17,6 +17,7 @@ vector< vector< vector<rate*> > > combosFromRates(const vector<rate*> &rates, co
     for (j = 0; j < combos.at(i-1).size(); ++j) {
       for (k = 0; k < rates.size(); ++k) {
         if (combos.at(i-1).at(j).back()->to == rates.at(k)->from &&
+        //!find(combos.at(i-1).at(j).begin(), combos.at(i-1).at(j).end(), rates.at(k)) != combos.at(i-1).at(j).end() &&
         !isRateInList(combos.at(i-1).at(j), rates.at(k)) &&
         !isListClosing(combos.at(i-1).at(j))) {
           vector<rate*> newV(combos.at(i-1).at(j));
@@ -70,11 +71,7 @@ bool isRateInList(const vector<rate*> &list, const rate *r)
 {
   int i;
   for (i = 0; i < list.size(); ++i) {
-    if (list[i]->from == r->from &&
-    list[i]->to == r->to &&
-    list[i]->exchange == r->exchange &&
-    list[i]->rate == r->rate &&
-    list[i]->vol == r->vol)
+    if (list[i] == r)
       return true;
   }
 
@@ -112,10 +109,8 @@ bool isDupe(const vector<vector<rate*> > &list, const vector<rate*> &arb)
 
   for (auto v : list) {
     for (auto r : v) {
-      if (!u[r]) {
-        // note: break the inner loop
+      if (!u[r])
         goto cnt;
-      }
     }
     return true;
     cnt:;

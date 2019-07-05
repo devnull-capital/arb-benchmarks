@@ -46,7 +46,8 @@ time/rust: build/rust
 
 .PHONY: build/cpp
 build/cpp:
-	@g++ -o ./cpp/main ./cpp/main.cpp ./cpp/arb.cpp -std=c++11 -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops
+	#@g++ -o ./cpp/main ./cpp/main.cpp ./cpp/arb.cpp -std=c++11 -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops
+	@g++ -o ./cpp/main ./cpp/main.cpp ./cpp/arb.cpp -std=c++11 -O3
 
 .PHONY: time/cpp
 time/cpp: build/cpp
@@ -80,5 +81,6 @@ gbench:
 .PHONY: bench/cpp
 bench/cpp: clean/cpp/bench
 	@echo "\n\nbenchmarking C++\n"
-	@g++ -o ./cpp/arb_benchmark ./cpp/arb_benchmark.cpp ./cpp/arb.cpp -std=c++17 -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops -lbenchmark -lpthread -isystem -I./cpp/benchmark/include -L./cpp/build/src
+	#@g++ -o ./cpp/arb_benchmark ./cpp/arb_benchmark.cpp ./cpp/arb.cpp -std=c++17 -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -frename-registers -funroll-loops -lbenchmark -lpthread -isystem -I./cpp/benchmark/include -L./cpp/build/src
+	@g++ -o ./cpp/arb_benchmark ./cpp/arb_benchmark.cpp ./cpp/arb.cpp -std=c++17 -O3 -lbenchmark -lpthread -isystem -I./cpp/benchmark/include -L./cpp/build/src
 	@./cpp/arb_benchmark
