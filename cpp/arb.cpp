@@ -2,24 +2,24 @@
 
 //namespace {
 
-vector< vector< vector<rate> > > arbFromRates(const vector<rate> &rates, const unsigned int depth)
+vector< vector< vector<rate*> > > arbFromRates(const vector<rate*> &rates, const unsigned int depth)
 {
   return arbFromCombos(combosFromRates(rates, depth));
 }
 
-vector< vector< vector<rate> > > combosFromRates(const vector<rate> &rates, const unsigned int depth)
+vector< vector< vector<rate*> > > combosFromRates(const vector<rate*> &rates, const unsigned int depth)
 {
-  vector< vector< vector<rate> > > combos(depth);
+  vector< vector< vector<rate*> > > combos(depth);
   buildBase(rates, combos.at(0));
 
   int i, j, k;
   for (i = 1; i < depth; ++i) {
     for (j = 0; j < combos.at(i-1).size(); ++j) {
       for (k = 0; k < rates.size(); ++k) {
-        if (combos.at(i-1).at(j).back().to == rates.at(k).from &&
+        if (combos.at(i-1).at(j).back()->to == rates.at(k)->from &&
         !isRateInList(combos.at(i-1).at(j), rates.at(k)) &&
         !isListClosing(combos.at(i-1).at(j))) {
-          vector<rate> newV(combos.at(i-1).at(j));
+          vector<rate*> newV(combos.at(i-1).at(j));
           newV.push_back(rates.at(k));
           combos.at(i).push_back(newV);
         }
@@ -30,9 +30,9 @@ vector< vector< vector<rate> > > combosFromRates(const vector<rate> &rates, cons
   return combos;
 }
 
-vector< vector< vector<rate> > > arbFromCombos(const vector< vector< vector<rate> > > &combos)
+vector< vector< vector<rate*> > > arbFromCombos(const vector< vector< vector<rate*> > > &combos)
 {
-  vector< vector< vector<rate> > > arb(combos.size());
+  vector< vector< vector<rate*> > > arb(combos.size());
   int i, j;
   for (i = 0; i < combos.size(); ++i) {
     for (j = 0; j < combos.at(i).size(); ++j) {
@@ -44,13 +44,13 @@ vector< vector< vector<rate> > > arbFromCombos(const vector< vector< vector<rate
   return arb;
 }
 
-void buildBase(const vector<rate> &rates, vector< vector<rate> > &ret)
+void buildBase(const vector<rate*> &rates, vector< vector<rate*> > &ret)
 {
   int i, j;
   for (i = 0; i < rates.size(); ++i) {
     for (j = i + 1; j < rates.size(); ++j) {
-      if (rates.at(i).to == rates.at(j).from) {
-        vector<rate> v = {
+      if (rates.at(i)->to == rates.at(j)->from) {
+        vector<rate*> v = {
           rates.at(i),
           rates.at(j),
         };
@@ -61,58 +61,58 @@ void buildBase(const vector<rate> &rates, vector< vector<rate> > &ret)
   }
 }
 
-bool isListClosing(const vector<rate> &list)
+bool isListClosing(const vector<rate*> &list)
 {
-  return list.front().from == list.back().to;
+  return list.front()->from == list.back()->to;
 }
 
-bool isRateInList(const vector<rate> &list, const rate &r)
+bool isRateInList(const vector<rate*> &list, const rate *r)
 {
   int i;
   for (i = 0; i < list.size(); ++i) {
-    if (list[i].from == r.from &&
-    list[i].to == r.to &&
-    list[i].exchange == r.exchange &&
-    list[i].rate == r.rate &&
-    list[i].vol == r.vol)
+    if (list[i]->from == r->from &&
+    list[i]->to == r->to &&
+    list[i]->exchange == r->exchange &&
+    list[i]->rate == r->rate &&
+    list[i]->vol == r->vol)
       return true;
   }
 
   return false;
 }
 
-bool isArb(const vector<rate> &list)
+bool isArb(const vector<rate*> &list)
 {
   if (list.size() < 2)
     return false;
 
-  if (list.front().from != list.back().to)
+  if (list.front()->from != list.back()->to)
     return false;
 
-  double prod = list.front().rate;
+  double prod = list.front()->rate;
   int i;
   for (i = 1; i < list.size(); ++i) {
-    if (list.at(i-1).to != list.at(i).from)
+    if (list.at(i-1)->to != list.at(i)->from)
       return false;
 
-    prod *= list.at(i).rate;
+    prod *= list.at(i)->rate;
   }
 
   return prod > 1.0;
 }
 
-bool isDupe(const vector<vector<rate> > &list, const vector<rate> &arb)
+bool isDupe(const vector<vector<rate*> > &list, const vector<rate*> &arb)
 {
   if (list.size() == 0)
     return false;
 
-  unordered_map<string, bool> u = {};
+  unordered_map<rate*, bool> u = {};
   for (auto r : arb)
-    u[r.from + "|" + r.to + "|" + r.exchange] = true;
+    u[r] = true;
 
   for (auto v : list) {
     for (auto r : v) {
-      if (!u[r.from + "|" + r.to + "|" + r.exchange]) {
+      if (!u[r]) {
         // note: break the inner loop
         goto cnt;
       }
