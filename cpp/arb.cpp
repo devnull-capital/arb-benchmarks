@@ -1,6 +1,6 @@
 #include "arb.hpp"
 
-//namespace {
+namespace arb {
 
 vector< vector< vector<rate*> > > arbFromRates(const vector<rate*> &rates, const unsigned int depth)
 {
@@ -119,4 +119,4 @@ bool isDupe(const vector<vector<rate*> > &list, const vector<rate*> &arb)
   return false;
 }
 
-//} // namespace
+} // namespace arb

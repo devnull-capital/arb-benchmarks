@@ -17,7 +17,7 @@ bench/rust:
 	@echo "\n\nbenchmarking rust\n" && (cd ./rust/src/ && cargo bench)
 
 .PHONY: test
-test: test/go test/rust
+test: test/go test/rust test/cpp
 	@echo "done"
 
 .PHONY: test/go

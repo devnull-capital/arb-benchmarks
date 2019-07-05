@@ -8,6 +8,8 @@ using namespace std;
 #ifndef ARB_H_
 #define ARB_H_
 
+namespace arb {
+
 struct rate {
   string from, to, exchange;
   double rate, vol;
@@ -21,5 +23,7 @@ vector< vector< vector<rate*> > > combosFromRates(const vector<rate*> &rates, co
 bool isListClosing(const vector<rate*> &list);
 void buildBase(const vector<rate*> &rates, vector< vector<rate*> > &ret);
 bool isRateInList(const vector<rate*> &list, const rate *r);
+
+} // namespace arb
 
 #endif // ARB_H_

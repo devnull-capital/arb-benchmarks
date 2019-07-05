@@ -5,28 +5,28 @@ constexpr unsigned int depth = 5;
 
 static void BM_ArbFromRates(benchmark::State& state) {
   // Perform setup here
-  rate *r1 = new rate{"a", "b", "foo", 2.0, 0.0};
-  rate *r2 = new rate{"a", "c", "foo", 2.0, 0.0};
-  rate *r3 = new rate{"a", "d", "foo", 2.0, 0.0};
-  rate *r4 = new rate{"a", "e", "foo", 2.0, 0.0};
-  rate *r5 = new rate{"b", "a", "foo", 2.0, 0.0};
-  rate *r6 = new rate{"b", "c", "foo", 2.0, 0.0};
-  rate *r7 = new rate{"b", "d", "foo", 2.0, 0.0};
-  rate *r8 = new rate{"b", "e", "foo", 2.0, 0.0};
-  rate *r9 = new rate{"c", "a", "foo", 2.0, 0.0};
-  rate *r10 = new rate{"c", "b", "foo", 2.0, 0.0};
-  rate *r11 = new rate{"c", "d", "foo", 2.0, 0.0};
-  rate *r12 = new rate{"c", "e", "foo", 2.0, 0.0};
-  rate *r13 = new rate{"d", "a", "foo", 2.0, 0.0};
-  rate *r14 = new rate{"d", "b", "foo", 2.0, 0.0};
-  rate *r15 = new rate{"d", "c", "foo", 2.0, 0.0};
-  rate *r16 = new rate{"d", "e", "foo", 2.0, 0.0};
-  rate *r17 = new rate{"e", "a", "foo", 2.0, 0.0};
-  rate *r18 = new rate{"e", "b", "foo", 2.0, 0.0};
-  rate *r19 = new rate{"e", "c", "foo", 2.0, 0.0};
-  rate *r20 = new rate{"e", "d", "foo", 2.0, 0.0};
+  arb::rate *r1 = new arb::rate{"a", "b", "foo", 2.0, 0.0};
+  arb::rate *r2 = new arb::rate{"a", "c", "foo", 2.0, 0.0};
+  arb::rate *r3 = new arb::rate{"a", "d", "foo", 2.0, 0.0};
+  arb::rate *r4 = new arb::rate{"a", "e", "foo", 2.0, 0.0};
+  arb::rate *r5 = new arb::rate{"b", "a", "foo", 2.0, 0.0};
+  arb::rate *r6 = new arb::rate{"b", "c", "foo", 2.0, 0.0};
+  arb::rate *r7 = new arb::rate{"b", "d", "foo", 2.0, 0.0};
+  arb::rate *r8 = new arb::rate{"b", "e", "foo", 2.0, 0.0};
+  arb::rate *r9 = new arb::rate{"c", "a", "foo", 2.0, 0.0};
+  arb::rate *r10 = new arb::rate{"c", "b", "foo", 2.0, 0.0};
+  arb::rate *r11 = new arb::rate{"c", "d", "foo", 2.0, 0.0};
+  arb::rate *r12 = new arb::rate{"c", "e", "foo", 2.0, 0.0};
+  arb::rate *r13 = new arb::rate{"d", "a", "foo", 2.0, 0.0};
+  arb::rate *r14 = new arb::rate{"d", "b", "foo", 2.0, 0.0};
+  arb::rate *r15 = new arb::rate{"d", "c", "foo", 2.0, 0.0};
+  arb::rate *r16 = new arb::rate{"d", "e", "foo", 2.0, 0.0};
+  arb::rate *r17 = new arb::rate{"e", "a", "foo", 2.0, 0.0};
+  arb::rate *r18 = new arb::rate{"e", "b", "foo", 2.0, 0.0};
+  arb::rate *r19 = new arb::rate{"e", "c", "foo", 2.0, 0.0};
+  arb::rate *r20 = new arb::rate{"e", "d", "foo", 2.0, 0.0};
   
-  vector<rate*> rates = {
+  vector<arb::rate*> rates = {
     r1,
     r2,
     r3,
@@ -49,12 +49,12 @@ static void BM_ArbFromRates(benchmark::State& state) {
     r20,
   };
 
-  vector< vector< vector<rate*> > > arb(depth);
+  vector< vector< vector<arb::rate*> > > arbitrage(depth);
   for (auto _ : state) {
     // This code gets timed
-    arb = arbFromRates(rates, depth);
+    arbitrage = arb::arbFromRates(rates, depth);
   }
-  cout << "tmp len: " << arb.size() << "\n";
+  cout << "tmp len: " << arbitrage.size() << "\n";
 
   delete r1;
   delete r2;
