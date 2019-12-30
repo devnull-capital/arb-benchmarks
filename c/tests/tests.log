@@ -1,0 +1,45 @@
+valgrind: ./main_tests.c: Permission denied
+==16856== Memcheck, a memory error detector
+==16856== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==16856== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==16856== Command: ./main_tests.c
+==16856== 
+./main_tests.c: line 3: syntax error near unexpected token `('
+./main_tests.c: line 3: `char *test_succeed() {'
+==16856== 
+==16856== HEAP SUMMARY:
+==16856==     in use at exit: 49,943 bytes in 665 blocks
+==16856==   total heap usage: 766 allocs, 101 frees, 72,781 bytes allocated
+==16856== 
+==16856== LEAK SUMMARY:
+==16856==    definitely lost: 32 bytes in 1 blocks
+==16856==    indirectly lost: 77 bytes in 5 blocks
+==16856==      possibly lost: 0 bytes in 0 blocks
+==16856==    still reachable: 49,834 bytes in 659 blocks
+==16856==         suppressed: 0 bytes in 0 blocks
+==16856== Rerun with --leak-check=full to see details of leaked memory
+==16856== 
+==16856== For lists of detected and suppressed errors, rerun with: -s
+==16856== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==18851== Memcheck, a memory error detector
+==18851== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==18851== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==18851== Command: ./main_tests.c
+==18851== 
+./main_tests.c: line 3: syntax error near unexpected token `('
+./main_tests.c: line 3: `char *test_succeed() {'
+==18851== 
+==18851== HEAP SUMMARY:
+==18851==     in use at exit: 49,931 bytes in 665 blocks
+==18851==   total heap usage: 768 allocs, 103 frees, 72,807 bytes allocated
+==18851== 
+==18851== LEAK SUMMARY:
+==18851==    definitely lost: 32 bytes in 1 blocks
+==18851==    indirectly lost: 77 bytes in 5 blocks
+==18851==      possibly lost: 0 bytes in 0 blocks
+==18851==    still reachable: 49,822 bytes in 659 blocks
+==18851==         suppressed: 0 bytes in 0 blocks
+==18851== Rerun with --leak-check=full to see details of leaked memory
+==18851== 
+==18851== For lists of detected and suppressed errors, rerun with: -s
+==18851== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
