@@ -59,7 +59,7 @@ rate_ptr_vec_t_three *arbFromRates(rate_ptr_vec_t_one *rates, unsigned int depth
 }
 
 rate_ptr_vec_t_three *arbFromCombos(rate_ptr_vec_t_three *combos) {
-  rate_ptr_vec_t_three *ret;
+  rate_ptr_vec_t_three *ret = (rate_ptr_vec_t_three *) malloc(sizeof(rate_ptr_vec_t_three));
   vec_init(ret);
 
   int i = 0;
@@ -131,7 +131,7 @@ int isArb(rate_ptr_vec_t_one *list) {
 }
 
 rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, unsigned int depth) {
-  rate_ptr_vec_t_three *ret;
+  rate_ptr_vec_t_three *ret = (rate_ptr_vec_t_three *) malloc(sizeof(rate_ptr_vec_t_three));
   vec_init(ret);
 
   int i = 0;
@@ -146,7 +146,7 @@ rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, unsigned int de
     for (j = 0; j < ret->data[i-1]->length; j++) {
       for (k = 0; k < rates->length; k++) {
 				if (ret->data[i-1]->data[j]->data[ret->data[i-1]->data[j]->length-1]->to == rates->data[k]->from && !isRateInList(ret->data[i-1]->data[j], rates->data[k]) && !isListClosing(ret->data[i-1]->data[j])) {
-          rate_ptr_vec_t_one *tmp;
+          rate_ptr_vec_t_one *tmp = (rate_ptr_vec_t_one *) malloc(sizeof(rate_ptr_vec_t_one));
           vec_init(tmp);
           
           for (z = 0; z < ret->data[i-1]->data[j]->length; z++) {
@@ -165,15 +165,15 @@ int isListClosing(rate_ptr_vec_t_one *list) {
 }
 
 rate_ptr_vec_t_two *buildBase(rate_ptr_vec_t_one *rates) {
-  rate_ptr_vec_t_two *ret;
+  rate_ptr_vec_t_two *ret = (rate_ptr_vec_t_two *) malloc(sizeof(rate_ptr_vec_t_two));
   vec_init(ret);
 
-  int i = 0;
-  int j = 0;
+  size_t i = 0;
+  size_t j = 0;
   for (i = 0; i < rates->length; i++) {
     for (j = i + 1; j < rates->length; j++) {
       if (rates->data[i]->to == rates->data[j]->from) {
-        rate_ptr_vec_t_one *tmp;
+        rate_ptr_vec_t_one *tmp = (rate_ptr_vec_t_one *) malloc(sizeof(rate_ptr_vec_t_one));
         vec_init(tmp);
 
         vec_push(tmp, rates->data[i]);
