@@ -21,11 +21,11 @@ int freeVecTOne(rate_ptr_vec_t_one *v);
 int freeVecTTwo(rate_ptr_vec_t_two *v);
 int freeVecTThree(rate_ptr_vec_t_three *v);
 
-rate_ptr_vec_t_three *arbFromRates(rate_ptr_vec_t_one *rates, unsigned int depth);
+rate_ptr_vec_t_three *arbFromRates(rate_ptr_vec_t_one *rates, size_t depth);
 rate_ptr_vec_t_three *arbFromCombos(rate_ptr_vec_t_three *combos);
 int isDupe(rate_ptr_vec_t_two *list, rate_ptr_vec_t_one *arb);
 int isArb(rate_ptr_vec_t_one *list);
-rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, unsigned int depth);
+rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, size_t depth);
 int isListClosing(rate_ptr_vec_t_one *list);
 rate_ptr_vec_t_two *buildBase(rate_ptr_vec_t_one *rates);
 int isRateInList(rate_ptr_vec_t_one *list,rate *r);

@@ -86,7 +86,7 @@ char *test_is_rate_in_list() {
   vec_push(&tests, t1);
   vec_push(&tests, t2);
 
-  int i = 0;
+  size_t i = 0;
   int received = 0;
   for (i = 0; i < tests.length; i++) {
     received = isRateInList(&tests.data[i]->list, tests.data[i]->r);
@@ -215,6 +215,161 @@ char *test_build_base() {
 
     return "failed";
   }
+  
+  // note: it should build on proper input
+  rate *r2 = (rate *) malloc(sizeof(rate));
+  check_mem(r2);
+
+  r2->from = "a";
+  r2->to = "b";
+  r2->exchange = "baz";
+  r2->rate = 1.0;
+  r2->vol = 1.0;
+
+  rate *r3 = (rate *) malloc(sizeof(rate));
+  check_mem(r3);
+
+  r3->from = "b";
+  r3->to = "c";
+  r3->exchange = "baz";
+  r3->rate = 1.0;
+  r3->vol = 1.0;
+
+  rate *r4 = (rate *) malloc(sizeof(rate));
+  check_mem(r4);
+
+  r4->from = "c";
+  r4->to = "d";
+  r4->exchange = "baz";
+  r4->rate = 1.0;
+  r4->vol = 1.0;
+
+  rate *r5 = (rate *) malloc(sizeof(rate));
+  check_mem(r5);
+
+  r5->from = "y";
+  r5->to = "z";
+  r5->exchange = "baz";
+  r5->rate = 1.0;
+  r5->vol = 1.0;
+
+  rate_ptr_vec_t_one l2;
+  vec_init(&l2);
+  vec_push(&l2, r2);
+  vec_push(&l2, r3);
+  vec_push(&l2, r4);
+  vec_push(&l2, r5);
+
+  rate_ptr_vec_t_two *base2 = buildBase(&l2);
+  if (!base2 || base2->length != 2 || base2->data[0]->length != 2 || base2->data[1]->length != 2) {
+    if (!base) {
+      log_err("test #2 failed; expected base");
+      if (r)
+        freeRate(r);
+      r = NULL; 
+
+      if (r1)
+        freeRate(r1);
+      r1 = NULL; 
+
+      if (r2)
+        freeRate(r2);
+      r2 = NULL; 
+
+      if (r3)
+        freeRate(r3);
+      r3 = NULL; 
+
+      if (r4)
+        freeRate(r4);
+      r4 = NULL; 
+
+      if (r5)
+        freeRate(r5);
+      r5 = NULL; 
+
+      vec_deinit(&l1);
+      vec_deinit(&l2);
+
+      if (base)
+        vec_deinit(base);
+
+      if (base2)
+        vec_deinit(base2);
+
+      return "failed";
+    }
+
+    log_err("test #2 failed; expected 2, received %d", base2->length);
+    if (r)
+      freeRate(r);
+    r = NULL; 
+
+    if (r1)
+      freeRate(r1);
+    r1 = NULL; 
+
+    if (r2)
+      freeRate(r2);
+    r2 = NULL; 
+
+    if (r3)
+      freeRate(r3);
+    r3 = NULL; 
+
+    if (r4)
+      freeRate(r4);
+    r4 = NULL; 
+
+    if (r5)
+      freeRate(r5);
+    r5 = NULL; 
+
+    vec_deinit(&l1);
+    vec_deinit(&l2);
+
+    if (base)
+      vec_deinit(base);
+
+    if (base2)
+      vec_deinit(base2);
+
+    return "failed";
+
+  }
+
+  if (r)
+    freeRate(r);
+  r = NULL; 
+
+  if (r1)
+    freeRate(r1);
+  r1 = NULL; 
+
+  if (r2)
+    freeRate(r2);
+  r2 = NULL; 
+
+  if (r3)
+    freeRate(r3);
+  r3 = NULL; 
+
+  if (r4)
+    freeRate(r4);
+  r4 = NULL; 
+
+  if (r5)
+    freeRate(r5);
+  r5 = NULL; 
+
+  vec_deinit(&l1);
+  vec_deinit(&l2);
+
+  if (base)
+    vec_deinit(base);
+
+  if (base2)
+    vec_deinit(base2);
 
   return NULL;
 
@@ -227,10 +382,127 @@ error:
     freeRate(r1);
   r1 = NULL; 
 
+  if (r2)
+    freeRate(r2);
+  r2 = NULL; 
+
+  if (r3)
+    freeRate(r3);
+  r3 = NULL; 
+
+  if (r4)
+    freeRate(r4);
+  r4 = NULL; 
+
+  if (r5)
+    freeRate(r5);
+  r5 = NULL; 
+
   vec_deinit(&l1);
+  vec_deinit(&l2);
 
   if (base)
     vec_deinit(base);
+
+  if (base2)
+    vec_deinit(base2);
+}
+
+char *test_combos_from_rates() {
+  // note: it should build on proper input
+  rate *r2 = (rate *) malloc(sizeof(rate));
+  check_mem(r2);
+
+  r2->from = "a";
+  r2->to = "b";
+  r2->exchange = "baz";
+  r2->rate = 1.0;
+  r2->vol = 1.0;
+
+  rate *r3 = (rate *) malloc(sizeof(rate));
+  check_mem(r3);
+
+  r3->from = "b";
+  r3->to = "c";
+  r3->exchange = "baz";
+  r3->rate = 1.0;
+  r3->vol = 1.0;
+
+  rate *r4 = (rate *) malloc(sizeof(rate));
+  check_mem(r4);
+
+  r4->from = "c";
+  r4->to = "d";
+  r4->exchange = "baz";
+  r4->rate = 1.0;
+  r4->vol = 1.0;
+
+  rate *r5 = (rate *) malloc(sizeof(rate));
+  check_mem(r5);
+
+  r5->from = "y";
+  r5->to = "z";
+  r5->exchange = "baz";
+  r5->rate = 1.0;
+  r5->vol = 1.0;
+
+  rate_ptr_vec_t_one l2;
+  vec_init(&l2);
+  vec_push(&l2, r2);
+  vec_push(&l2, r3);
+  vec_push(&l2, r4);
+  vec_push(&l2, r5);
+  
+  rate_ptr_vec_t_three *combos = combosFromRates(&l2, 4);
+  if (!combos || combos->length != 4 || combos->data[0]->length != 2 || combos->data[0]->data[0]->length != 2 || combos->data[0]->data[1]->length != 2 || combos->data[1]->data[0]->length != 2 && combos->data[1]->data[1]->length != 3) { 
+    log_info("combos len: %d; 0 len: %d; 00 len: %d; 01 len: %d; 1 len: %d", combos->length, combos->data[0]->length, combos->data[0]->data[0]->length, combos->data[0]->data[1]->length, combos->data[1]->length);
+    if (r2)
+      freeRate(r2);
+    r2 = NULL; 
+
+    if (r3)
+      freeRate(r3);
+    r3 = NULL; 
+
+    if (r4)
+      freeRate(r4);
+    r4 = NULL; 
+
+    if (r5)
+      freeRate(r5);
+    r5 = NULL; 
+
+    vec_deinit(&l2);
+
+    if (combos)
+      vec_deinit(combos);
+
+    return "failed";
+  }
+
+  return NULL;
+
+error:
+  if (r2)
+    freeRate(r2);
+  r2 = NULL; 
+
+  if (r3)
+    freeRate(r3);
+  r3 = NULL; 
+
+  if (r4)
+    freeRate(r4);
+  r4 = NULL; 
+
+  if (r5)
+    freeRate(r5);
+  r5 = NULL; 
+
+  vec_deinit(&l2);
+
+  if (combos)
+    vec_deinit(combos);
 }
 
 char *all_tests() {
@@ -239,6 +511,7 @@ char *all_tests() {
     mu_run_test(test_rate);
     mu_run_test(test_is_rate_in_list);
     mu_run_test(test_build_base);
+    mu_run_test(test_combos_from_rates);
 
     return NULL;
 }

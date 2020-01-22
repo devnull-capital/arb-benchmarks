@@ -31,7 +31,7 @@ int freeVecTOne(rate_ptr_vec_t_one *v) {
 }
 
 int freeVecTTwo(rate_ptr_vec_t_two *v) {
-  int i = 0;
+  size_t i = 0;
   for (i = 0; i < v->length; i++) {
     if (v->data[i] && freeVecTOne(v->data[i]) != 0)
       return 1;
@@ -43,7 +43,7 @@ int freeVecTTwo(rate_ptr_vec_t_two *v) {
 }
 
 int freeVecTThree(rate_ptr_vec_t_three *v) {
-  int i = 0;
+  size_t i = 0;
   for (i = 0; i < v->length; i++) {
     if (v->data[i] && freeVecTTwo(v->data[i]) != 0)
       return 1;
@@ -54,7 +54,7 @@ int freeVecTThree(rate_ptr_vec_t_three *v) {
   return 0;
 }
 
-rate_ptr_vec_t_three *arbFromRates(rate_ptr_vec_t_one *rates, unsigned int depth) {
+rate_ptr_vec_t_three *arbFromRates(rate_ptr_vec_t_one *rates, size_t depth) {
   return arbFromCombos(combosFromRates(rates, depth));
 }
 
@@ -62,8 +62,8 @@ rate_ptr_vec_t_three *arbFromCombos(rate_ptr_vec_t_three *combos) {
   rate_ptr_vec_t_three *ret = (rate_ptr_vec_t_three *) malloc(sizeof(rate_ptr_vec_t_three));
   vec_init(ret);
 
-  int i = 0;
-  int j = 0;
+  size_t i = 0;
+  size_t j = 0;
   for (i = 0; i < combos->length; i++) {
     for (j = 0; j < combos->data[i]->length; j++) {
       if (isArb(combos->data[i]->data[j]) && !isDupe(ret->data[i], combos->data[i]->data[j]))
@@ -81,7 +81,7 @@ int isDupe(rate_ptr_vec_t_two *list, rate_ptr_vec_t_one *arb) {
   map_int_t m;
   map_init(&m);
 
-  int i = 0;
+  size_t i = 0;
   char *key;
   sprintf(key, "%p", arb->data[i]);
 
@@ -89,7 +89,7 @@ int isDupe(rate_ptr_vec_t_two *list, rate_ptr_vec_t_one *arb) {
     map_set(&m, key, 1);
   }
 
-  int j = 0;
+  size_t j = 0;
   int count = 0;
 
   for (i = 0; i < list->length; i++) {
@@ -119,7 +119,7 @@ int isArb(rate_ptr_vec_t_one *list) {
     return 0;
 
   double prod = list->data[0]->rate;
-  int i = 0;
+  size_t i = 0;
   for (i = 1; i < list->length; i++) {
     if (list->data[i-1]->to != list->data[i]->from)
       return 0;
@@ -130,17 +130,23 @@ int isArb(rate_ptr_vec_t_one *list) {
   return prod > 1.0;
 }
 
-rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, unsigned int depth) {
+rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, size_t depth) {
   rate_ptr_vec_t_three *ret = (rate_ptr_vec_t_three *) malloc(sizeof(rate_ptr_vec_t_three));
   vec_init(ret);
 
-  int i = 0;
-  int j = 0;
-  int k = 0;
-  int z = 0;
+  size_t i = 0;
+  size_t j = 0;
+  size_t k = 0;
+  size_t z = 0;
 
   rate_ptr_vec_t_two *base_rates = buildBase(rates);
   vec_push(ret, base_rates);
+
+  for (i = 0; i < depth - 1; i++) {
+    rate_ptr_vec_t_two *tmp_ret = (rate_ptr_vec_t_two *) malloc(sizeof(rate_ptr_vec_t_two));
+    vec_init(tmp_ret);
+    vec_push(ret, tmp_ret);
+  }
 
 	for (i = 1; i < depth; i++) {
     for (j = 0; j < ret->data[i-1]->length; j++) {
@@ -152,6 +158,8 @@ rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, unsigned int de
           for (z = 0; z < ret->data[i-1]->data[j]->length; z++) {
             vec_push(tmp, ret->data[i-1]->data[j]->data[z]);
           }
+
+          vec_push(ret->data[i], tmp);
         }
       }
     }
@@ -161,6 +169,10 @@ rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, unsigned int de
 }
 
 int isListClosing(rate_ptr_vec_t_one *list) {
+  if (!list || list->length < 2) {
+    return 0;
+  }
+
   return list->data[0]->from == list->data[list->length - 1]->to;
 }
 
@@ -187,11 +199,12 @@ rate_ptr_vec_t_two *buildBase(rate_ptr_vec_t_one *rates) {
   return ret;
 }
 
-int isRateInList(rate_ptr_vec_t_one *list,rate *r) {
-  int i = 0;
+int isRateInList(rate_ptr_vec_t_one *list, rate *r) {
+  size_t i = 0;
   for (i = 0; i < list->length; i++) {
-    if (list->data[i] == r)
+    if (list->data[i] == r) {
       return 1;
+    }
   }
 
   return 0;
