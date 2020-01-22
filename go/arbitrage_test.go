@@ -138,7 +138,6 @@ func TestCombosFromRates(t *testing.T) {
 			},
 		}
 		r := combosFromRates(rates, 4)
-		log.Printf("%v", r)
 		if len(r) != 4 || len(r[0]) != 2 || len(r[0][0]) != 2 || len(r[0][1]) != 2 || len(r[1]) != 1 || len(r[1][0]) != 3 {
 			t.Errorf("expected two length result with three sub-length, received %d for %v", len(r), r)
 		}

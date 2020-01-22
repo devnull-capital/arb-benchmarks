@@ -64,6 +64,13 @@ rate_ptr_vec_t_three *arbFromCombos(rate_ptr_vec_t_three *combos) {
 
   size_t i = 0;
   size_t j = 0;
+
+  for (i = 0; i < combos->length - 1; i++) {
+    rate_ptr_vec_t_two *tmp_ret = (rate_ptr_vec_t_two *) malloc(sizeof(rate_ptr_vec_t_two));
+    vec_init(tmp_ret);
+    vec_push(ret, tmp_ret);
+  }
+
   for (i = 0; i < combos->length; i++) {
     for (j = 0; j < combos->data[i]->length; j++) {
       if (isArb(combos->data[i]->data[j]) && !isDupe(ret->data[i], combos->data[i]->data[j]))
@@ -158,6 +165,7 @@ rate_ptr_vec_t_three *combosFromRates(rate_ptr_vec_t_one *rates, size_t depth) {
           for (z = 0; z < ret->data[i-1]->data[j]->length; z++) {
             vec_push(tmp, ret->data[i-1]->data[j]->data[z]);
           }
+          vec_push(tmp, rates->data[k]);
 
           vec_push(ret->data[i], tmp);
         }

@@ -406,6 +406,9 @@ error:
 
   if (base2)
     vec_deinit(base2);
+
+  log_err("error");
+  return "failed";
 }
 
 char *test_combos_from_rates() {
@@ -454,8 +457,9 @@ char *test_combos_from_rates() {
   vec_push(&l2, r5);
   
   rate_ptr_vec_t_three *combos = combosFromRates(&l2, 4);
-  if (!combos || combos->length != 4 || combos->data[0]->length != 2 || combos->data[0]->data[0]->length != 2 || combos->data[0]->data[1]->length != 2 || combos->data[1]->data[0]->length != 2 && combos->data[1]->data[1]->length != 3) { 
-    log_info("combos len: %d; 0 len: %d; 00 len: %d; 01 len: %d; 1 len: %d", combos->length, combos->data[0]->length, combos->data[0]->data[0]->length, combos->data[0]->data[1]->length, combos->data[1]->length);
+  /*if (!combos || combos->length != 4 || combos->data[0]->length != 2 || combos->data[0]->data[0]->length != 2 || combos->data[0]->data[1]->length != 2 || combos->data[1]->data[0]->length != 2 && combos->data[1]->data[1]->length != 3) { */
+  if (!combos || combos->length != 4 || combos->data[0]->length != 2 || combos->data[0]->data[0]->length != 2 || combos->data[0]->data[1]->length != 2 || combos->data[1]->length != 1 || combos->data[1]->data[0]->length != 3) { 
+    log_info("combos len: %d; 0 len: %d; 00 len: %d; 01 len: %d; 1 len: %d, 10 len: %d", combos->length, combos->data[0]->length, combos->data[0]->data[0]->length, combos->data[0]->data[1]->length, combos->data[1]->length, combos->data[1]->data[0]->length);
     if (r2)
       freeRate(r2);
     r2 = NULL; 
