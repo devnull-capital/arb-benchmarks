@@ -1,7 +1,7 @@
-all: test
+all: bench
 
 clean:
-	-rm main_tests
+	-rm bench
 	-rm ../main.o
 
 build/deps:
@@ -10,7 +10,7 @@ build/deps:
 	@gcc -Wall -g -c ../main.c -o ../main.o 
 
 build: clean build/deps
-	@gcc -Wall -g main_tests.c ../main.o ../lib/map-3/map-3.o ../lib/vec/vec.o -o main_tests
+	@gcc -Wall -g benchmark.c ../main.o ../lib/map-3/map-3.o ../lib/vec/vec.o -o benchmark
 
-test: build
-	@./main_tests
+bench: build
+	@./benchmark

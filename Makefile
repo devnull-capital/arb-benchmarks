@@ -1,12 +1,12 @@
 all: bench
 
-.PHONY: time
-time: time/go time/rust time/cpp
+.PHONY: bench
+bench: bench/go bench/rust bench/cpp bench/c
 	@echo "\n\ndone!"
 
-.PHONY: bench
-bench: bench/go bench/rust bench/cpp
-	@echo "\n\ndone!"
+.PHONY: bench/c
+bench/c:
+	@echo "\n\nbenchmarking c\n" && (cd ./c/benchmark && make)
 
 .PHONY: bench/go
 bench/go:
@@ -16,17 +16,33 @@ bench/go:
 bench/rust:
 	@echo "\n\nbenchmarking rust\n" && (cd ./rust/src/ && cargo bench)
 
-.PHONY: test
-test: test/go test/rust test/cpp
+.PHONY: time
+time: time/go time/rust time/cpp time/c
 	@echo "done"
+
+.PHONY: test
+test: test/go test/rust test/cpp test/c
+	@echo "done"
+
+.PHONY: test/c
+test/c:
+	@echo "testing c\n" && (cd ./c/tests && make)
 
 .PHONY: test/go
 test/go:
 	@echo "testing go\n" && (cd ./go && go test .)
 
+.PHONY: build/c
+build/c:
+	@(cd c/time && make)
+
 .PHONY: build/go
 build/go:
 	@(cd go && go build -o main)
+
+.PHONY: time/c
+time/c: build/c
+	@echo "\n\n timing c" && (cd ./c/time && make && time ./time) && echo "\n\n"
 
 .PHONY: time/go
 time/go: build/go
