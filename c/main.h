@@ -2,7 +2,6 @@
 #define __main_h__
 
 #include "lib/vec/vec.h"
-#include "lib/map/map.h"
 
 typedef struct rate {
   char *from;

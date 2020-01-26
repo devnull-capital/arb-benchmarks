@@ -1,9 +1,12 @@
 // standard libs
 #include <stdio.h>
+#include <stdint.h>
+/*#include <cstdint>*/
 
 // custom libs
 #include "lib/dbg.h"
 #include "lib/vec/vec.h"
+#include "lib/map-3/map-3.h"
 
 // package header
 #include "main.h"
@@ -65,7 +68,7 @@ rate_ptr_vec_t_three *arbFromCombos(rate_ptr_vec_t_three *combos) {
   size_t i = 0;
   size_t j = 0;
 
-  for (i = 0; i < combos->length - 1; i++) {
+  for (i = 0; i < combos->length; i++) {
     rate_ptr_vec_t_two *tmp_ret = (rate_ptr_vec_t_two *) malloc(sizeof(rate_ptr_vec_t_two));
     vec_init(tmp_ret);
     vec_push(ret, tmp_ret);
@@ -73,8 +76,9 @@ rate_ptr_vec_t_three *arbFromCombos(rate_ptr_vec_t_three *combos) {
 
   for (i = 0; i < combos->length; i++) {
     for (j = 0; j < combos->data[i]->length; j++) {
-      if (isArb(combos->data[i]->data[j]) && !isDupe(ret->data[i], combos->data[i]->data[j]))
+      if (isArb(combos->data[i]->data[j]) && !isDupe(ret->data[i], combos->data[i]->data[j])) {
         vec_push(ret->data[i], combos->data[i]->data[j]);
+      }
     }
   }
 
@@ -85,36 +89,29 @@ int isDupe(rate_ptr_vec_t_two *list, rate_ptr_vec_t_one *arb) {
   if (!list || list->length == 0)
     return 0;
 
-  map_int_t m;
-  map_init(&m);
+  struct table *m = createTable(arb->length);
 
   size_t i = 0;
-  char *key;
-  sprintf(key, "%p", arb->data[i]);
-
   for (i = 0; i < arb->length; i++) {
-    map_set(&m, key, 1);
+    insert(m, (uintptr_t)arb->data[i], 1);
   }
 
   size_t j = 0;
   int count = 0;
-
   for (i = 0; i < list->length; i++) {
     count = 0;
     for (j = 0; j < list->data[i]->length; j++) {
-      sprintf(key, "%p", list->data[i]->data[j]);
-      int *val = map_get(&m, key);
-      if (val)
+      if (lookup(m, (uintptr_t)list->data[i]->data[j]) == 1)
         count++;
     }
 
     if (count == list->data[i]->length) {
-      map_deinit(&m);
+      free(m);
       return 1;
     }
   }
 
-  map_deinit(&m);
+  free(m);
   return 0;
 }
 
