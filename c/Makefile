@@ -4,4 +4,4 @@ clean:
 	-rm main.o
 
 build: clean
-	@gcc -Wall -g -c main.c -o main.o 
+	@gcc -Wall -Ofast -g -c main.c -o main.o 
