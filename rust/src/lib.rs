@@ -17,10 +17,10 @@ pub struct Rate {
 
 /// A pair or triple of rates that may form a closed loop
 #[derive(Copy, Clone, Debug)]
-pub struct Arb {
-    a: Rate,
-    b: Rate,
-    c: Option<Rate>,
+pub struct Arb<'a> {
+    a: &'a Rate,
+    b: &'a Rate,
+    c: Option<&'a Rate>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd, Eq)]
@@ -52,14 +52,14 @@ impl PartialEq for Rate {
     }
 }
 
-impl PartialEq for Arb {
+impl<'a> PartialEq for Arb<'a> {
     fn eq(&self, other: &Self) -> bool {
         self.bitset() == other.bitset()
     }
 }
 
-#[derive(PartialEq)]
-struct Bitset {
+#[derive(Debug, PartialEq)]
+pub struct Bitset {
     arr: [u64; 4],
 }
 
@@ -81,7 +81,7 @@ impl Bitset {
     }
 }
 
-impl Arb {
+impl<'a> Arb<'a> {
     fn is_closed(&self) -> bool {
         if self.a.from == self.b.to {
             return true;
@@ -92,7 +92,7 @@ impl Arb {
         false
     }
 
-    fn contains(&self, rate: Rate) -> bool {
+    fn contains(&self, rate: &Rate) -> bool {
         let c = match self.c {
             Some(r) => r == rate,
             _ => false,
@@ -108,7 +108,7 @@ impl Arb {
         self.a.rate * self.b.rate * self.c.map(|o| o.rate).unwrap_or(1.0) > 1.0
     }
 
-    fn bitset(&self) -> Bitset {
+    pub fn bitset(&self) -> Bitset {
         let mut bs = Bitset::empty();
         bs.set(self.a.id);
         bs.set(self.b.id);
@@ -117,7 +117,7 @@ impl Arb {
     }
 }
 
-pub fn arb_from_rates<'a>(rates: &[&'a Rate]) -> Vec<Arb> {
+pub fn arb_from_rates<'a>(rates: &[&'a Rate]) -> Vec<Arb<'a>> {
     let base = build_base(rates);
     let mut out = Vec::with_capacity(base.len() * 10);
     for b in base {
@@ -126,9 +126,9 @@ pub fn arb_from_rates<'a>(rates: &[&'a Rate]) -> Vec<Arb> {
             continue;
         }
         for &i in rates {
-            if !b.contains(*i) && b.b.to == i.from && i.to == b.a.from {
+            if !b.contains(i) && b.b.to == i.from && i.to == b.a.from {
                 let mut closed = b;
-                closed.c = Some(*i);
+                closed.c = Some(i);
                 if closed.is_arb() {
                     out.push(closed);
                 }
@@ -140,7 +140,7 @@ pub fn arb_from_rates<'a>(rates: &[&'a Rate]) -> Vec<Arb> {
 }
 
 #[inline]
-fn build_base<'a>(rates: &[&'a Rate]) -> Vec<Arb> {
+fn build_base<'a>(rates: &[&'a Rate]) -> Vec<Arb<'a>> {
     rates
         .iter()
         .enumerate()
@@ -148,8 +148,8 @@ fn build_base<'a>(rates: &[&'a Rate]) -> Vec<Arb> {
             rates[(i + 1)..].iter().filter_map(move |&rate_b| {
                 if rate_a.to == rate_b.from {
                     Some(Arb {
-                        a: *rate_a,
-                        b: *rate_b,
+                        a: rate_a,
+                        b: rate_b,
                         c: None,
                     })
                 } else {
@@ -161,7 +161,7 @@ fn build_base<'a>(rates: &[&'a Rate]) -> Vec<Arb> {
 }
 
 #[inline]
-pub fn v_to_rc(mut v: Vec<Rate>) -> Arb {
+pub fn v_to_rc<'a>(mut v: Vec<&'a Rate>) -> Arb<'a> {
     Arb {
         a: v.remove(0),
         b: v.remove(0),
@@ -365,11 +365,11 @@ fn test_is_rate_in_list() {
         rate: 1.0,
         vol: 1.0,
     };
-    let l1 = v_to_rc(vec![r1, r2, r3]);
-    let l2 = v_to_rc(vec![r2, r3]);
+    let l1 = v_to_rc(vec![&r1, &r2, &r3]);
+    let l2 = v_to_rc(vec![&r2, &r3]);
 
-    assert_eq!(l1.contains(r1), true);
-    assert_eq!(l2.contains(r1), false);
+    assert_eq!(l1.contains(&r1), true);
+    assert_eq!(l2.contains(&r1), false);
 }
 
 #[test]
@@ -422,8 +422,8 @@ fn test_is_list_closing() {
         rate: 1.0,
         vol: 1.0,
     };
-    let l1 = v_to_rc(vec![r1, r2]);
-    let l2 = v_to_rc(vec![r1, r3]);
+    let l1 = v_to_rc(vec![&r1, &r2]);
+    let l2 = v_to_rc(vec![&r1, &r3]);
 
     assert_eq!(l1.is_closed(), true);
     assert_eq!(l2.is_closed(), false);
@@ -474,7 +474,7 @@ fn test_combos_from_rates() {
 fn test_is_arb() {
     assert_eq!(
         v_to_rc(vec![
-            Rate {
+            &Rate {
                 id: 0,
                 from: Currency::A,
                 to: Currency::B,
@@ -482,7 +482,7 @@ fn test_is_arb() {
                 rate: 1.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 1,
                 from: Currency::B,
                 to: Currency::A,
@@ -497,7 +497,7 @@ fn test_is_arb() {
 
     assert_eq!(
         v_to_rc(vec![
-            Rate {
+            &Rate {
                 id: 0,
                 from: Currency::Y,
                 to: Currency::Z,
@@ -505,7 +505,7 @@ fn test_is_arb() {
                 rate: 1.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 1,
                 from: Currency::A,
                 to: Currency::B,
@@ -520,7 +520,7 @@ fn test_is_arb() {
 
     assert_eq!(
         v_to_rc(vec![
-            Rate {
+            &Rate {
                 id: 0,
                 from: Currency::A,
                 to: Currency::B,
@@ -528,7 +528,7 @@ fn test_is_arb() {
                 rate: 2.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 1,
                 from: Currency::B,
                 to: Currency::C,
@@ -543,7 +543,7 @@ fn test_is_arb() {
 
     assert_eq!(
         v_to_rc(vec![
-            Rate {
+            &Rate {
                 id: 0,
                 from: Currency::A,
                 to: Currency::B,
@@ -551,7 +551,7 @@ fn test_is_arb() {
                 rate: 2.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 1,
                 from: Currency::B,
                 to: Currency::C,
@@ -559,7 +559,7 @@ fn test_is_arb() {
                 rate: 2.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 2,
                 from: Currency::C,
                 to: Currency::A,
@@ -574,7 +574,7 @@ fn test_is_arb() {
 
     assert_eq!(
         v_to_rc(vec![
-            Rate {
+            &Rate {
                 id: 0,
                 from: Currency::A,
                 to: Currency::B,
@@ -582,7 +582,7 @@ fn test_is_arb() {
                 rate: 1.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 1,
                 from: Currency::B,
                 to: Currency::C,
@@ -590,7 +590,7 @@ fn test_is_arb() {
                 rate: 1.0,
                 vol: 1.0,
             },
-            Rate {
+            &Rate {
                 id: 2,
                 from: Currency::C,
                 to: Currency::A,
@@ -641,7 +641,7 @@ fn test_arb_from_rates() {
 
     let l1 = vec![&r1, &r2, &r3, &r4];
     let arb = arb_from_rates(&l1);
-    assert_eq!(arb, vec![v_to_rc(vec![r1, r2, r3])]);
+    assert_eq!(arb, vec![v_to_rc(vec![&r1, &r2, &r3])]);
 }
 
 #[bench]
