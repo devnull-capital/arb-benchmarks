@@ -2,6 +2,7 @@
 
 extern crate test;
 use std::collections::HashSet;
+use std::iter;
 use test::Bencher;
 
 #[derive(Debug)]
@@ -14,25 +15,95 @@ pub struct Rate {
     pub vol: f64,
 }
 
-pub fn arb_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
-    return arb_from_combos(combos_from_rates(rates, depth))
+impl PartialEq for Rate {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
 }
 
-fn arb_from_combos<'a>(combos: Vec<Vec<Vec<&'a Rate>>>) -> Vec<Vec<Vec<&'a Rate>>> {
-    let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::new();
+pub fn arb_from_rates<'a>(rates: &[&'a Rate], depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
+    arb_from_combos(combos_from_rates(rates, depth))
+}
 
-    for i in combos {
-        let mut tmp: Vec<Vec<&Rate>> = Vec::new();
-        for j in i {
-            if is_arb(&j) && !is_dupe(&tmp, &j) {
-                tmp.push(j);
+fn arb_from_combos(mut combos: Vec<Vec<Vec<&Rate>>>) -> Vec<Vec<Vec<&Rate>>> {
+    combos.iter_mut().for_each(|x| {
+        x.retain(|j| is_arb(&j));
+        x.iter_mut().for_each(|x| x.sort_unstable_by_key(|r| r.id));
+        // Relying on the fact that each array will be unique once sorted
+        x.dedup();
+    });
+    combos
+}
+
+fn is_arb(list: &[&Rate]) -> bool {
+    if list.len() < 2 {
+        return false;
+    }
+
+    if list[0].from != list[list.len() - 1].to {
+        return false;
+    }
+
+    list.windows(2)
+        .try_fold(list[0].rate, |prod, rates| {
+            if rates[0].to != rates[1].from {
+                return None;
+            }
+            Some(prod * rates[1].rate)
+        })
+        .map_or(false, |prod| prod > 1.0)
+}
+
+fn combos_from_rates<'a>(rates: &[&'a Rate], depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
+    let mut ret = Vec::with_capacity(depth as usize + 1);
+    ret.push(build_base(rates));
+
+    for i in 1..(depth as usize) {
+        let mut tmp = Vec::new();
+        for j in 0..ret[i - 1].len() {
+            for k in 0..rates.len() {
+                if ret[i - 1][j].last().unwrap().to == rates[k].from
+                    && !is_rate_in_list(&ret[i - 1][j], rates[k])
+                    && !is_list_closing(&ret[i - 1][j])
+                {
+                    tmp.push(
+                        ret[i - 1][j]
+                            .iter()
+                            .chain(iter::once(&rates[k]))
+                            .copied()
+                            .collect(),
+                    );
+                }
             }
         }
-
         ret.push(tmp);
     }
 
-    return ret
+    ret
+}
+
+fn is_list_closing(list: &Vec<&Rate>) -> bool {
+    list[0].from == list.last().unwrap().to
+}
+
+fn build_base<'a>(rates: &[&'a Rate]) -> Vec<Vec<&'a Rate>> {
+    rates
+        .iter()
+        .enumerate()
+        .flat_map(|(i, &rate_a)| {
+            rates[(i + 1)..].iter().filter_map(move |&rate_b| {
+                if rate_a.to == rate_b.from {
+                    Some(vec![rate_a, rate_b])
+                } else {
+                    None
+                }
+            })
+        })
+        .collect()
+}
+
+fn is_rate_in_list(list: &[&Rate], r: &Rate) -> bool {
+    list.iter().any(|&rate| rate == r)
 }
 
 fn is_dupe<'a>(list: &'a Vec<Vec<&'a Rate>>, arb: &'a Vec<&'a Rate>) -> bool {
@@ -57,80 +128,6 @@ fn is_dupe<'a>(list: &'a Vec<Vec<&'a Rate>>, arb: &'a Vec<&'a Rate>) -> bool {
         }
 
         if count == list[i].len() {
-            return true
-        }
-    }
-
-    return false
-}
-
-fn is_arb<'a>(list: &'a Vec<&'a Rate>) -> bool {
-    if list.len() < 2 {
-        return false
-    }
-
-    if list[0].from != list[(list.len()-1) as usize].to {
-        return false
-    }
-
-    let mut prod = list[0].rate;
-    for i in 1..list.len() {
-        if list[(i-1) as usize].to != list[i].from {
-            return false
-        }
-
-        prod *= list[i].rate;
-    }
-
-    return prod > 1.0
-}
-
-fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
-    let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::with_capacity(depth as usize);
-    ret.push(build_base(rates));
-
-    for i in 1..depth {
-        let mut tmp: Vec<Vec<&Rate>> = Vec::new();
-        for j in 0..ret[(i-1) as usize].len() {
-            for k in 0..rates.len() {
-                if ret[(i-1) as usize][j as usize].last().unwrap().to == rates[k as usize].from && !is_rate_in_list(&ret[(i-1) as usize][j as usize], rates[k as usize]) && !is_list_closing(&ret[(i-1) as usize][j as usize]) {
-                    let mut tmp1: Vec<&Rate> = Vec::with_capacity(ret[(i-1) as usize][j as usize].len() + 1);
-                    for z in 0..ret[(i-1) as usize][j as usize].len() {
-                        tmp1.push(ret[(i-1) as usize][j as usize][z]); 
-                    }
-                    tmp1.push(rates[k as usize]);
-                    tmp.push(tmp1);
-                }
-            }
-        }
-        ret.push(tmp);
-    }
-
-    return ret
-}
-
-fn is_list_closing<'a>(list: &'a Vec<&'a Rate>) -> bool {
-    list[0].from == list[list.len()-1].to
-}
-
-fn build_base<'a>(rates: &'a Vec<&'a Rate>) -> Vec<Vec<&'a Rate>> {
-    let mut ret: Vec<Vec<&Rate>> = Vec::new();
-
-    for i in 0..rates.len() {
-        for j in (i+1)..rates.len() {
-            if rates[i].to == rates[j].from {
-                ret.push(vec![rates[i], rates[j]]);
-            }
-        }
-    }
-
-    return ret
-}
-
-fn is_rate_in_list<'a>(list: &'a Vec<&'a Rate>, r: &'a Rate) -> bool {
-    // note: not doing nil checks for speed reasons...
-    for i in 0..list.len() {
-        if list[i].id == r.id {
             return true
         }
     }
@@ -301,11 +298,11 @@ fn main() {
     };
     let l = vec![r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20];
 
-    let mut tmp: Vec<Vec<Vec<&Rate>>> = Vec::new();
+    //let mut tmp: Vec<Vec<Vec<&Rate>>> = Vec::new();
     for _ in 0..100 {
-        tmp = arb_from_rates(&l, 5);
+        arb_from_rates(&l, 5);
     }
-    println!("tmp len: {}", tmp.len());
+    //println!("tmp len: {}", tmp.len());
 }
 
 #[test]
@@ -799,9 +796,10 @@ fn bench_arb(b: &mut Bencher) {
     let l = vec![r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20];
 
     // note: don't want rust to optimize away by not using output
-    let mut tmp: Vec<Vec<Vec<&Rate>>> = Vec::new();
+    //let mut tmp: Vec<Vec<Vec<&Rate>>> = Vec::new();
     b.iter(|| {
-        tmp = arb_from_rates(&l, 5);
+        //tmp = arb_from_rates(&l, 5);
+        arb_from_rates(&l, 5);
     });
-    println!("tmp len: {}", tmp.len());
+    //println!("tmp len: {}", tmp.len());
 }
