@@ -1,7 +1,7 @@
 #![feature(test)]
 
 extern crate test;
-use std::collections::HashMap;
+use std::collections::HashSet;
 use test::Bencher;
 
 #[derive(Debug)]
@@ -40,19 +40,18 @@ fn is_dupe<'a>(list: &'a Vec<Vec<&'a Rate>>, arb: &'a Vec<&'a Rate>) -> bool {
         return false
     }
 
-    let mut m: HashMap<u8, bool> = HashMap::new();
+    let mut m: HashSet<u8> = HashSet::new();
 
     for i in 0..arb.len() {
         m.insert(
             arb[i].id,
-            true
         );
     }
 
     for i in 0..list.len() {
         let mut count = 0;
         for j in 0..list[i].len() {
-            if m.contains_key(&list[i][j].id) {
+            if m.contains(&list[i][j].id) {
                 count = count + 1;
             }
         }
@@ -87,7 +86,7 @@ fn is_arb<'a>(list: &'a Vec<&'a Rate>) -> bool {
 }
 
 fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'a Rate>>> {
-    let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::new();
+    let mut ret: Vec<Vec<Vec<&Rate>>> = Vec::with_capacity(depth as usize);
     ret.push(build_base(rates));
 
     for i in 1..depth {
@@ -95,7 +94,7 @@ fn combos_from_rates<'a>(rates: &'a Vec<&'a Rate>, depth: u32) -> Vec<Vec<Vec<&'
         for j in 0..ret[(i-1) as usize].len() {
             for k in 0..rates.len() {
                 if ret[(i-1) as usize][j as usize].last().unwrap().to == rates[k as usize].from && !is_rate_in_list(&ret[(i-1) as usize][j as usize], rates[k as usize]) && !is_list_closing(&ret[(i-1) as usize][j as usize]) {
-                    let mut tmp1: Vec<&Rate> = Vec::new();
+                    let mut tmp1: Vec<&Rate> = Vec::with_capacity(ret[(i-1) as usize][j as usize].len() + 1);
                     for z in 0..ret[(i-1) as usize][j as usize].len() {
                         tmp1.push(ret[(i-1) as usize][j as usize][z]); 
                     }

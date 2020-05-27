@@ -14,7 +14,7 @@ bench/go:
 
 .PHONY: bench/rust
 bench/rust:
-	@echo "\n\nbenchmarking rust\n" && (cd ./rust/src/ && cargo bench)
+	@echo "\n\nbenchmarking rust\n" && (cd ./rust/src/ && cargo +nightly bench)
 
 .PHONY: time
 time: time/go time/rust time/cpp time/c
@@ -54,7 +54,7 @@ test/rust:
 
 .PHONY: build/rust
 build/rust:
-	@rustc ./rust/src/lib.rs -o ./rust/main
+	@rustc +nightly ./rust/src/lib.rs -o ./rust/main
 
 .PHONY: time/rust
 time/rust: build/rust

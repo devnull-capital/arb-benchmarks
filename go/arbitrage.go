@@ -206,11 +206,11 @@ func combosFromRates(rates []*rate, depth uint) [][][]*rate {
 		for j := range ret[i-1] {
 			for k := range rates {
 				if ret[i-1][j][len(ret[i-1][j])-1].to == rates[k].from && !isRateInList(ret[i-1][j], rates[k]) && !isListClosing(ret[i-1][j]) {
-					var tmp []*rate
+					tmp := make([]*rate, len(ret[i-1][j])+1)
 					for z := range ret[i-1][j] {
-						tmp = append(tmp, ret[i-1][j][z])
+						tmp[z] = ret[i-1][j][z]
 					}
-					tmp = append(tmp, rates[k])
+					tmp[len(tmp)-1] = rates[k]
 					ret[i] = append(ret[i], tmp)
 				}
 			}

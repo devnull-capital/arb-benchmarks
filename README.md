@@ -3,7 +3,7 @@ Go vs. Rust vs. C++ arb bot tester. YMMV
 # C++
 In order to test the C++ code, first run `$ make gtest`.
 
-In order to benchmark the c++ code, first run `$ make gbench`.
+In order to benchmark the c++ code, first install [gbench](https://github.com/google/benchmark#installation).
 
 # Usage
 

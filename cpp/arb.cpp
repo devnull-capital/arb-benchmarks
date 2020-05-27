@@ -103,13 +103,13 @@ bool isDupe(const vector<vector<rate*> > &list, const vector<rate*> &arb)
   if (list.size() == 0)
     return false;
 
-  unordered_map<rate*, bool> u = {};
+  unordered_set<rate*> u = {};
   for (auto &r : arb)
-    u[r] = true;
+    u.insert(r);
 
   for (auto &v : list) {
     for (auto &r : v) {
-      if (!u[r])
+      if (u.find(r) == u.end())
         goto cnt;
     }
     return true;
